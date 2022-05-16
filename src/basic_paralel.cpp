@@ -1,16 +1,41 @@
-#include <pthread.h>
 #include "opencv2/opencv.hpp"
+#include <pthread.h>
 #include "iostream"
 #include "algorithm"
 #include "vector"
 
 using namespace std;
-using namespace cv;
 
 const int MAX_THREADS = 64;
 
-uchar adaptiveProcess(const Mat&, int, int, int, int);
-void work(Mat, Mat&);
+uchar adaptiveProcess(const cv::Mat &, int, int, int, int);
+
+struct p_info
+{
+	cv::Mat *src;
+	cv::Mat *dst;
+	int start;
+	int end;
+	int max;
+	int min;
+};
+
+static void* th_work(void *arguments)
+{
+	struct p_info *part_info = (struct p_info *) arguments;
+	cv::Mat &dst = *(part_info->dst);
+	int cols = dst.cols;
+	int offset = part_info->max / 2;
+
+	for (int j = part_info->start; j < part_info->end; j++)
+	{
+		for (int i = offset; i < cols * dst.channels() - offset; i++)
+		{
+			dst.at<uchar>(j, i) = adaptiveProcess(dst, j, i, part_info->min, part_info->max);
+		}
+	}
+	return NULL;
+}
 
 /* Global variable:  accessible to all threads */
 int thread_count;
@@ -31,17 +56,36 @@ int main(int argc, char **argv)
 
 	/* Get number of threads from command line */
 	thread_count = strtol(argv[2], NULL, 10);
-	thread_handles = malloc(thread_count * sizeof(pthread_t));
+	thread_handles = (pthread_t *)malloc(thread_count * sizeof(pthread_t));
+	struct p_info partitions[thread_count];
 
-	for (thread = 0; thread < thread_count; thread++)
+	/* Read Images */
+	cv::Mat src = cv::imread(argv[1]);
+	cv::Mat dst;
+
+	/* Prepare DST */
+	int min_size = 3;
+	int max_size = 15;
+	int offset = max_size / 2;
+	cv::copyMakeBorder(src, dst, offset, offset, offset, offset, cv::BORDER_REFLECT);
+
+	int div_size;
+	for (thread = 1; thread < thread_count; thread++)
 	{
 #ifdef DEBUG
 		printf("Creating thread %ld.\n", thread);
 #endif
+		div_size = src.cols / thread_count;
+		partitions[thread].src = &src;
+		partitions[thread].dst = &dst;
+		partitions[thread].start = div_size * thread + offset;
+		partitions[thread].end = (thread != thread_count - 1) ? div_size * (thread + 1) + offset : src.cols + offset;
+		partitions[thread].max = max_size;
+		partitions[thread].min = min_size;
 
 		/* Create threads */
 		pthread_create(&thread_handles[thread], NULL,
-					   th_work, (void *)thread);
+					   th_work, (void *) &partitions[thread]);
 	}
 
 	for (thread = 0; thread < thread_count; thread++)
@@ -52,7 +96,8 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-uchar adaptiveProcess(const Mat &im, int row, int col, int kernelSize, int maxSize)
+
+uchar adaptiveProcess(const cv::Mat &im, int row, int col, int kernelSize, int maxSize)
 {
 	vector<uchar> pixels;
 	for (int a = -kernelSize / 2; a <= kernelSize / 2; a++)
@@ -85,21 +130,5 @@ uchar adaptiveProcess(const Mat &im, int row, int col, int kernelSize, int maxSi
 			return adaptiveProcess(im, row, col, kernelSize, maxSize);
 		else
 			return med;
-	}
-}
-
-void work(Mat src, Mat& dst)
-{
-	int minSize = 3;  //滤波器窗口的起始大小
-	int maxSize = 15; //滤波器窗口的最大尺寸
-	copyMakeBorder(src, dst, maxSize / 2, maxSize / 2, maxSize / 2, maxSize / 2, BORDER_REFLECT);
-	int rows = dst.rows;
-	int cols = dst.cols;
-	for (int j = maxSize / 2; j < rows - maxSize / 2; j++)
-	{
-		for (int i = maxSize / 2; i < cols * dst.channels() - maxSize / 2; i++)
-		{
-			dst.at<uchar>(j, i) = adaptiveProcess(dst, j, i, minSize, maxSize);
-		}
 	}
 }
