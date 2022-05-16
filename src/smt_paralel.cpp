@@ -81,8 +81,12 @@ int main(int argc, char **argv)
 
 	/* Get number of threads from command line */
 	thread_count = strtol(argv[2], NULL, 10);
-	thread_handles = (pthread_t *)malloc(thread_count * sizeof(pthread_t));
 	std::queue<struct p_info> partitions; // struct p_info partitions[thread_count];
+	long div_count = thread_count;
+	if (thread_count > 8)
+		thread_count = 8;
+	thread_handles = (pthread_t *)malloc(thread_count * sizeof(pthread_t));
+
 
 	/* Read Images */
 	cv::Mat src = cv::imread(argv[1]);
@@ -96,13 +100,13 @@ int main(int argc, char **argv)
 
 	int div_size;
 	struct p_info part;
-	for (thread = 0; thread < thread_count; thread++)
+	for (long div = 0; div < div_count; div++)
 	{
-		div_size = src.cols / thread_count;
+		div_size = src.cols / div_count;
 		part.src = &src;
 		part.dst = &dst;
-		part.start = div_size * thread + offset;
-		part.end = (thread != thread_count - 1) ? div_size * (thread + 1) + offset : src.cols + offset;
+		part.start = div_size * div + offset;
+		part.end = (div != div_count - 1) ? div_size * (div + 1) + offset : src.cols + offset;
 		part.max = max_size;
 		part.min = min_size;
 		
