@@ -47,6 +47,7 @@ Mat work(Mat src){
             dst.at<uchar>(j, i) = adaptiveProcess(dst, j, i, minSize, maxSize);
         }
     }
+    dst = dst(Range(maxSize/2, src.rows + maxSize/2), Range(maxSize/2, src.cols + maxSize/2));
     return dst;
 }
 

@@ -20,13 +20,15 @@ struct p_info
 	int min;
 };
 
-static void* th_work(void *arguments)
+static void *th_work(void *arguments)
 {
-	struct p_info *part_info = (struct p_info *) arguments;
+	struct p_info *part_info = (struct p_info *)arguments;
 	cv::Mat &dst = *(part_info->dst);
 	int cols = dst.cols;
 	int offset = part_info->max / 2;
-
+#ifdef DEBUG
+	printf("Thread start:%d end:%d STARTED\n", part_info->start, part_info->end);
+#endif
 	for (int j = part_info->start; j < part_info->end; j++)
 	{
 		for (int i = offset; i < cols * dst.channels() - offset; i++)
@@ -34,6 +36,9 @@ static void* th_work(void *arguments)
 			dst.at<uchar>(j, i) = adaptiveProcess(dst, j, i, part_info->min, part_info->max);
 		}
 	}
+#ifdef DEBUG
+	printf("Thread start:%d end:%d ENDED\n", part_info->start, part_info->end);
+#endif
 	return NULL;
 }
 
@@ -70,7 +75,7 @@ int main(int argc, char **argv)
 	cv::copyMakeBorder(src, dst, offset, offset, offset, offset, cv::BORDER_REFLECT);
 
 	int div_size;
-	for (thread = 1; thread < thread_count; thread++)
+	for (thread = 0; thread < thread_count; thread++)
 	{
 #ifdef DEBUG
 		printf("Creating thread %ld.\n", thread);
@@ -83,19 +88,27 @@ int main(int argc, char **argv)
 		partitions[thread].max = max_size;
 		partitions[thread].min = min_size;
 
-		/* Create threads */
-		pthread_create(&thread_handles[thread], NULL,
-					   th_work, (void *) &partitions[thread]);
+		if (thread)
+		{
+			/* Create threads */
+			pthread_create(&thread_handles[thread], NULL,
+						   th_work, (void *)&partitions[thread]);
+		}
 	}
+	th_work((void *)&partitions[0]);
 
-	for (thread = 0; thread < thread_count; thread++)
+	for (thread = 1; thread < thread_count; thread++)
 		pthread_join(thread_handles[thread], NULL);
 
 	free(thread_handles);
 
+	dst = dst(cv::Range(offset, src.rows+offset), cv::Range(offset, src.cols+offset));
+	cv::imshow("origin", src);
+	cv::imshow("result", dst);
+	cv::imwrite("lena_filtered.png", dst);
+	cv::waitKey(0);
 	return 0;
 }
-
 
 uchar adaptiveProcess(const cv::Mat &im, int row, int col, int kernelSize, int maxSize)
 {

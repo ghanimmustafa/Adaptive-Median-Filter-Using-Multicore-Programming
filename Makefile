@@ -17,11 +17,11 @@ run_seq: build_seq
 
 build_basic: dir_basic
 	cp $(SRCDIR)/*.png $(BUILDDIR)_basic
-	g++ $(SRCDIR)/basic_paralel.cpp -o $(BUILDDIR)_seq/bas_par `pkg-config --cflags --libs opencv4` -lpthread -Wall
+	g++ $(SRCDIR)/basic_paralel.cpp -o $(BUILDDIR)_basic/bas_par `pkg-config --cflags --libs opencv4` -lpthread -Wall
 
 build_basic_d: dir_basic
 	cp $(SRCDIR)/*.png $(BUILDDIR)_basic
-	g++ $(SRCDIR)/basic_paralel.cpp -o $(BUILDDIR)_seq/bas_par `pkg-config --cflags --libs opencv4` -lpthread -Wall -DDEBUG
+	g++ $(SRCDIR)/basic_paralel.cpp -o $(BUILDDIR)_basic/bas_par `pkg-config --cflags --libs opencv4` -lpthread -Wall -DDEBUG
 
 dir_basic: # Create file if it does not exists
 	@[ -d $(BUILDDIR)_basic ] || mkdir -p $(BUILDDIR)_basic
