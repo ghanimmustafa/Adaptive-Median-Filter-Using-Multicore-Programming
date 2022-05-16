@@ -8,7 +8,7 @@
 using namespace std;
 
 const int MAX_THREADS = 64;
-pthread_rwlock_t rw_lck;
+pthread_mutex_t mtx;
 
 uchar adaptiveProcess(const cv::Mat &, int, int, int, int);
 
@@ -26,15 +26,14 @@ static void *th_work(void *arguments)
 {
 	std::queue<struct p_info> *part_queue = (std::queue<struct p_info>*) arguments;
 	struct p_info part_info;
-	pthread_rwlock_rdlock(&rw_lck);
-	bool q_empty = part_queue->empty();
-	pthread_rwlock_unlock(&rw_lck);
-	while (!q_empty)
+	while (true)
 	{
-		pthread_rwlock_wrlock(&rw_lck);
+		pthread_mutex_lock(&mtx);
+		if (part_queue->empty())
+			break;
 		part_info = (struct p_info) part_queue->front();
 		part_queue->pop();
-		pthread_rwlock_unlock(&rw_lck);
+		pthread_mutex_unlock(&mtx);
 		cv::Mat &dst = *(part_info.dst);
 		int cols = dst.cols;
 		int offset = part_info.max / 2;
@@ -51,13 +50,8 @@ static void *th_work(void *arguments)
 #ifdef DEBUG
 		printf("Thread start:%d end:%d ENDED\n", part_info.start, part_info.end);
 #endif
-	pthread_rwlock_rdlock(&rw_lck);
-	q_empty = part_queue->empty();
-	pthread_rwlock_unlock(&rw_lck);
-#ifdef DEBUG
-		printf("Thread start:%d end:%d Queue Empty: %d\n", part_info.start, part_info.end, q_empty);
-#endif
 	}
+	pthread_mutex_unlock(&mtx);
 	return NULL;
 }
 
@@ -77,7 +71,7 @@ int main(int argc, char **argv)
 	/*  Thread  Related */
 	long thread;			   /* Use long in case of a 64-bit system */
 	pthread_t *thread_handles; /* Array to hold threads */
-	pthread_rwlock_init(&rw_lck, NULL);
+	pthread_mutex_init(&mtx, NULL);
 
 	/* Get number of threads from command line */
 	thread_count = strtol(argv[2], NULL, 10);
@@ -129,7 +123,7 @@ int main(int argc, char **argv)
 		pthread_join(thread_handles[thread], NULL);
 
 	free(thread_handles);
-	pthread_rwlock_destroy(&rw_lck);
+	pthread_mutex_destroy(&mtx);
 
 	dst = dst(cv::Range(offset, src.rows + offset), cv::Range(offset, src.cols + offset));
 	cv::imshow("origin", src);
