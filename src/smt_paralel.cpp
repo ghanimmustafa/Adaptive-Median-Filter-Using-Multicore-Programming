@@ -3,10 +3,12 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
 const int MAX_THREADS = 64;
+pthread_rwlock_t rw_lck;
 
 uchar adaptiveProcess(const cv::Mat &, int, int, int, int);
 
@@ -22,23 +24,40 @@ struct p_info
 
 static void *th_work(void *arguments)
 {
-	struct p_info *part_info = (struct p_info *)arguments;
-	cv::Mat &dst = *(part_info->dst);
-	int cols = dst.cols;
-	int offset = part_info->max / 2;
-#ifdef DEBUG
-	printf("Thread start:%d end:%d STARTED\n", part_info->start, part_info->end);
-#endif
-	for (int j = part_info->start; j < part_info->end; j++)
+	std::queue<struct p_info> *part_queue = (std::queue<struct p_info>*) arguments;
+	struct p_info part_info;
+	pthread_rwlock_rdlock(&rw_lck);
+	bool q_empty = part_queue->empty();
+	pthread_rwlock_unlock(&rw_lck);
+	while (!q_empty)
 	{
-		for (int i = offset; i < cols * dst.channels() - offset; i++)
-		{
-			dst.at<uchar>(j, i) = adaptiveProcess(dst, j, i, part_info->min, part_info->max);
-		}
-	}
+		pthread_rwlock_wrlock(&rw_lck);
+		part_info = (struct p_info) part_queue->front();
+		part_queue->pop();
+		pthread_rwlock_unlock(&rw_lck);
+		cv::Mat &dst = *(part_info.dst);
+		int cols = dst.cols;
+		int offset = part_info.max / 2;
 #ifdef DEBUG
-	printf("Thread start:%d end:%d ENDED\n", part_info->start, part_info->end);
+		printf("Thread start:%d end:%d STARTED\n", part_info.start, part_info.end);
 #endif
+		for (int j = part_info.start; j < part_info.end; j++)
+		{
+			for (int i = offset; i < cols * dst.channels() - offset; i++)
+			{
+				dst.at<uchar>(j, i) = adaptiveProcess(dst, j, i, part_info.min, part_info.max);
+			}
+		}
+#ifdef DEBUG
+		printf("Thread start:%d end:%d ENDED\n", part_info.start, part_info.end);
+#endif
+	pthread_rwlock_rdlock(&rw_lck);
+	q_empty = part_queue->empty();
+	pthread_rwlock_unlock(&rw_lck);
+#ifdef DEBUG
+		printf("Thread start:%d end:%d Queue Empty: %d\n", part_info.start, part_info.end, q_empty);
+#endif
+	}
 	return NULL;
 }
 
@@ -58,11 +77,12 @@ int main(int argc, char **argv)
 	/*  Thread  Related */
 	long thread;			   /* Use long in case of a 64-bit system */
 	pthread_t *thread_handles; /* Array to hold threads */
+	pthread_rwlock_init(&rw_lck, NULL);
 
 	/* Get number of threads from command line */
 	thread_count = strtol(argv[2], NULL, 10);
 	thread_handles = (pthread_t *)malloc(thread_count * sizeof(pthread_t));
-	struct p_info partitions[thread_count];
+	std::queue<struct p_info> partitions; // struct p_info partitions[thread_count];
 
 	/* Read Images */
 	cv::Mat src = cv::imread(argv[1]);
@@ -75,34 +95,39 @@ int main(int argc, char **argv)
 	cv::copyMakeBorder(src, dst, offset, offset, offset, offset, cv::BORDER_REFLECT);
 
 	int div_size;
+	struct p_info part;
 	for (thread = 0; thread < thread_count; thread++)
+	{
+		div_size = src.cols / thread_count;
+		part.src = &src;
+		part.dst = &dst;
+		part.start = div_size * thread + offset;
+		part.end = (thread != thread_count - 1) ? div_size * (thread + 1) + offset : src.cols + offset;
+		part.max = max_size;
+		part.min = min_size;
+		
+		partitions.push(part);
+	}
+
+	for (thread = 1; thread < thread_count; thread++)
 	{
 #ifdef DEBUG
 		printf("Creating thread %ld.\n", thread);
 #endif
-		div_size = src.cols / thread_count;
-		partitions[thread].src = &src;
-		partitions[thread].dst = &dst;
-		partitions[thread].start = div_size * thread + offset;
-		partitions[thread].end = (thread != thread_count - 1) ? div_size * (thread + 1) + offset : src.cols + offset;
-		partitions[thread].max = max_size;
-		partitions[thread].min = min_size;
-
-		if (thread)
-		{
 			/* Create threads */
 			pthread_create(&thread_handles[thread], NULL,
-						   th_work, (void *)&partitions[thread]);
-		}
+						   th_work, (void *)&partitions);
 	}
-	th_work((void *)&partitions[0]);
+	
+	th_work((void *)&partitions);
 
 	for (thread = 1; thread < thread_count; thread++)
 		pthread_join(thread_handles[thread], NULL);
 
 	free(thread_handles);
+	pthread_rwlock_destroy(&rw_lck);
 
-	dst = dst(cv::Range(offset, src.rows+offset), cv::Range(offset, src.cols+offset));
+	dst = dst(cv::Range(offset, src.rows + offset), cv::Range(offset, src.cols + offset));
 	cv::imshow("origin", src);
 	cv::imshow("result", dst);
 	cv::imwrite("lena_filtered.png", dst);
