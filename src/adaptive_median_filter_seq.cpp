@@ -3,9 +3,12 @@
 #include "iostream"
 #include "algorithm"
 #include "vector"
+#include <chrono>
 using namespace std;
 using namespace cv;
-
+#ifdef DEBUG
+	double cnt = 0.0;
+#endif
 uchar adaptiveProcess(const Mat &im, int row, int col, int kernelSize, int maxSize)
 {
     vector <uchar> pixels;
@@ -27,6 +30,9 @@ uchar adaptiveProcess(const Mat &im, int row, int col, int kernelSize, int maxSi
         }
     }
     else{
+		  #ifdef DEBUG
+		  	cnt+= 1;
+        #endif	
         kernelSize += 2;
         if(kernelSize <= maxSize)
             return adaptiveProcess(im, row, col, kernelSize, maxSize);
@@ -53,9 +59,18 @@ Mat work(Mat src){
 
 int main(int argc, char* argv[]){
     Mat src = cv::imread(argv[1]);
+    auto start = std::chrono::system_clock::now();
     Mat dst = work(src);
-    imshow("origin", src);
-    imshow("result", dst);
-    imwrite("lena_filtered.png", dst);
+  	 auto end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+	 #ifdef DEBUG
+    	std::cout << "Adaptive window usage ratio = "<< (cnt/(src.rows * src.cols)) * 100  << "%" << std::endl;
+    #endif  
+    std::cout << "Elapsed time = "<< elapsed_seconds.count()  << " seconds" << std::endl;  
+    //imshow("origin", src);
+	 cv::imwrite("seq_adaptive_filtered.png", dst);
+	 cv::resize(dst, dst, cv::Size(), 0.35, 0.35);
+	 cv::imshow("result", dst);
     waitKey(0);
+    destroyAllWindows(); 
 }

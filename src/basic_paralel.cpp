@@ -3,7 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
-
+#include <chrono>
 using namespace std;
 
 const int MAX_THREADS = 64;
@@ -48,6 +48,8 @@ int thread_count;
 int main(int argc, char **argv)
 {
 
+
+  	
 	/* Check command line usage */
 	if (argc < 2)
 	{
@@ -67,7 +69,7 @@ int main(int argc, char **argv)
 	/* Read Images */
 	cv::Mat src = cv::imread(argv[1]);
 	cv::Mat dst;
-
+   auto start = chrono::system_clock::now();
 	/* Prepare DST */
 	int min_size = 3;
 	int max_size = 15;
@@ -100,13 +102,19 @@ int main(int argc, char **argv)
 	for (thread = 1; thread < thread_count; thread++)
 		pthread_join(thread_handles[thread], NULL);
 
-	free(thread_handles);
-
+	
+	
 	dst = dst(cv::Range(offset, src.rows+offset), cv::Range(offset, src.cols+offset));
-	cv::imshow("origin", src);
+   auto end = std::chrono::system_clock::now();
+   free(thread_handles);
+   std::chrono::duration<double> elapsed_seconds = end - start;
+   std::cout << "Elapsed time = "<< elapsed_seconds.count()  << " seconds" << std::endl;  
+   //cv::imshow("origin", src);  
+	cv::imwrite("basic_paralel_adaptive_filtered.png", dst);
+	cv::resize(dst, dst, cv::Size(), 0.35, 0.35);
 	cv::imshow("result", dst);
-	cv::imwrite("lena_filtered.png", dst);
 	cv::waitKey(0);
+   cv::destroyAllWindows(); 
 	return 0;
 }
 

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <vector>
 #include <queue>
+#include <chrono>
 
 using namespace std;
 
@@ -85,7 +86,7 @@ int main(int argc, char **argv)
 	/* Read Images */
 	cv::Mat src = cv::imread(argv[1]);
 	cv::Mat dst;
-
+   auto start = std::chrono::system_clock::now();
 	/* Prepare DST */
 	int min_size = 3;
 	int max_size = 15;
@@ -126,9 +127,13 @@ int main(int argc, char **argv)
 	pthread_mutex_destroy(&mtx);
 
 	dst = dst(cv::Range(offset, src.rows + offset), cv::Range(offset, src.cols + offset));
-	cv::imshow("origin", src);
+   auto end = std::chrono::system_clock::now();
+   std::chrono::duration<double> elapsed_seconds = end - start;
+   std::cout << "Elapsed time = "<< elapsed_seconds.count()  << " seconds" << std::endl;  
+	//cv::imshow("origin", src);
+	cv::imwrite("smt_paralel_adaptive_filtered.png", dst);
+	cv::resize(dst, dst, cv::Size(), 0.35, 0.35);
 	cv::imshow("result", dst);
-	cv::imwrite("lena_filtered.png", dst);
 	cv::waitKey(0);
 	return 0;
 }

@@ -15,3 +15,8 @@ Use `make run*` command. This will run the created executable under the related 
 
 ### Clean
 Use `make clean` command to delete all build folders.
+
+### Dataset
+Reference:
+https://people.ee.ethz.ch/~timofter/publications/Agustsson-CVPRW-2017.pdf
+https://data.vision.ee.ethz.ch/cvl/DIV2K/
