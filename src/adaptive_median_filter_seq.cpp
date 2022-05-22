@@ -1,9 +1,13 @@
 /* Source:https://github.com/BBuf/Image-processing-algorithm/blob/master/Image%20Filtering/Adaptive%20Median%20Filter.cpp*/
+// Compile:
+// g++ adaptive_median_filter_seq.cpp -o adaptive_median_filter_seq `pkg-config --cflags --libs opencv4` -DDEBUG
 #include "opencv2/opencv.hpp"
 #include "iostream"
 #include "algorithm"
 #include "vector"
 #include <chrono>
+#include <string> 
+#include <fstream>
 using namespace std;
 using namespace cv;
 #ifdef DEBUG
@@ -43,8 +47,8 @@ uchar adaptiveProcess(const Mat &im, int row, int col, int kernelSize, int maxSi
 
 Mat work(Mat src){
     Mat dst;
-    int minSize = 3; //滤波器窗口的起始大小
-    int maxSize = 15; //滤波器窗口的最大尺寸
+    int minSize = 3;
+    int maxSize = 15;
     copyMakeBorder(src, dst, maxSize / 2, maxSize / 2, maxSize / 2, maxSize / 2, BORDER_REFLECT);
     int rows = dst.rows;
     int cols = dst.cols;
@@ -58,19 +62,45 @@ Mat work(Mat src){
 }
 
 int main(int argc, char* argv[]){
-    Mat src = cv::imread(argv[1]);
+	int kernel_size;
+	string image_name;
+	Mat src;
+	Mat dst;
+	if (argc<=1)
+	{ cout<< "<image_name.png> \n";
+	  exit(0);
+	}
+
+	else if (argc>=2)
+	{ 
+		src = imread(argv[1]);
+		image_name = argv[1];
+	}
     auto start = std::chrono::system_clock::now();
-    Mat dst = work(src);
+    dst = work(src);
   	 auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
+    std::cout << image_name << " after " << " adaptive median filter (sequential) takes " <<  elapsed_seconds.count()  << " seconds." << std::endl; 
+	 
 	 #ifdef DEBUG
-    	std::cout << "Adaptive window usage ratio = "<< (cnt/(src.rows * src.cols)) * 100  << "%" << std::endl;
+		ofstream myfile2;
+		myfile2.open ("adaptive_window_usage_ratio.txt",ios::app);
+    	std::cout << "Adaptive window usage ratio = "<< (cnt/(src.rows * src.cols)) * 100  << " %" << std::endl;
+		myfile2 << image_name << ": adaptive window usage ratio = " << (cnt/(src.rows * src.cols)) * 100  << "% \n";
+		myfile2.close();
+		cv::imwrite("seq_adaptive_filtered_"+image_name, dst);
+	 #else
+		ofstream myfile1;
+	   myfile1.open ("adaptive_median_filter_seq_runtimes.txt",ios::app);
+		myfile1 << image_name << " after " << " adaptive median filter (sequential) takes " <<  elapsed_seconds.count()  << " seconds\n";
+		myfile1.close();
     #endif  
-    std::cout << "Elapsed time = "<< elapsed_seconds.count()  << " seconds" << std::endl;  
-    //imshow("origin", src);
-	 cv::imwrite("seq_adaptive_filtered.png", dst);
+	
+	
+	 /*	
 	 cv::resize(dst, dst, cv::Size(), 0.35, 0.35);
 	 cv::imshow("result", dst);
     waitKey(0);
-    destroyAllWindows(); 
+    destroyAllWindows(); */
+	 return 0;
 }

@@ -1,0 +1,10 @@
+low_noisy_0801.png: adaptive window usage ratio = 26.2886% 
+low_noisy_0802.png: adaptive window usage ratio = 59.8133% 
+low_noisy_0803.png: adaptive window usage ratio = 121.748% 
+low_noisy_0804.png: adaptive window usage ratio = 69.6707% 
+low_noisy_0805.png: adaptive window usage ratio = 86.1033% 
+high_noisy_0801.png: adaptive window usage ratio = 47.0543% 
+high_noisy_0802.png: adaptive window usage ratio = 54.949% 
+high_noisy_0803.png: adaptive window usage ratio = 69.2946% 
+high_noisy_0804.png: adaptive window usage ratio = 57.0804% 
+high_noisy_0805.png: adaptive window usage ratio = 55.3736% 

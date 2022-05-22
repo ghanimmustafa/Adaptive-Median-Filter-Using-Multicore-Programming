@@ -1,0 +1,10 @@
+low_noisy_0801.png after  adaptive median filter (sequential) takes 19.3092 seconds
+low_noisy_0802.png after  adaptive median filter (sequential) takes 24.9359 seconds
+low_noisy_0803.png after  adaptive median filter (sequential) takes 36.3308 seconds
+low_noisy_0804.png after  adaptive median filter (sequential) takes 24.903 seconds
+low_noisy_0805.png after  adaptive median filter (sequential) takes 44.8987 seconds
+high_noisy_0801.png after  adaptive median filter (sequential) takes 21.7136 seconds
+high_noisy_0802.png after  adaptive median filter (sequential) takes 22.5903 seconds
+high_noisy_0803.png after  adaptive median filter (sequential) takes 26.9834 seconds
+high_noisy_0804.png after  adaptive median filter (sequential) takes 20.6767 seconds
+high_noisy_0805.png after  adaptive median filter (sequential) takes 26.6538 seconds
