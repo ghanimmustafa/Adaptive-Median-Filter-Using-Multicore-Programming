@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 {
 
 	/* Check command line usage */
-	if (argc < 2)
+	if (argc < 3)
 	{
 		fprintf(stderr, "Usage: %s <image_file.png> <thread_count> \n", argv[0]);
 		return -1;
@@ -95,6 +95,7 @@ int main(int argc, char **argv)
 	int min_size = 3;
 	int max_size = 15;
 	int offset = max_size / 2;
+	int rows_cols_min = min(src.rows,src.cols);
 	auto start = std::chrono::system_clock::now();
 	cv::copyMakeBorder(src, dst, offset, offset, offset, offset, cv::BORDER_REFLECT);
 
@@ -102,11 +103,12 @@ int main(int argc, char **argv)
 	struct p_info part;
 	for (long div = 0; div < div_count; div++)
 	{
-		div_size = src.cols / div_count;
+
+		div_size = rows_cols_min /  div_count;
 		part.src = &src;
 		part.dst = &dst;
 		part.start = div_size * div + offset;
-		part.end = (div != div_count - 1) ? div_size * (div + 1) + offset : src.cols + offset;
+		part.end = (div != div_count - 1) ? div_size * (div + 1) + offset : rows_cols_min + offset;
 		part.max = max_size;
 		part.min = min_size;
 		

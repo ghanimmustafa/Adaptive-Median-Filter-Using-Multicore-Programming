@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 
   	
 	/* Check command line usage */
-	if (argc < 2)
+	if (argc < 3)
 	{
 		fprintf(stderr, "Usage: %s <image_file.png> <thread_count> \n", argv[0]);
 		return -1;
@@ -82,6 +82,7 @@ int main(int argc, char **argv)
 	int max_size = 15;
 	int offset = max_size / 2;
 	auto start = chrono::system_clock::now();
+	int rows_cols_min = min(src.rows,src.cols);
 	cv::copyMakeBorder(src, dst, offset, offset, offset, offset, cv::BORDER_REFLECT);
 
 	int div_size;
@@ -90,13 +91,14 @@ int main(int argc, char **argv)
 #ifdef DEBUG
 		printf("Creating thread %ld.\n", thread);
 #endif
-		div_size = src.cols / thread_count;
+		div_size = rows_cols_min / thread_count;
 		partitions[thread].src = &src;
 		partitions[thread].dst = &dst;
 		partitions[thread].start = div_size * thread + offset;
-		partitions[thread].end = (thread != thread_count - 1) ? div_size * (thread + 1) + offset : src.cols + offset;
+		partitions[thread].end = (thread != thread_count - 1) ? div_size * (thread + 1) + offset : rows_cols_min + offset;
 		partitions[thread].max = max_size;
 		partitions[thread].min = min_size;
+
 
 		if (thread)
 		{
@@ -107,10 +109,8 @@ int main(int argc, char **argv)
 	}
 	th_work((void *)&partitions[0]);
 
-	for (thread = 0; thread < thread_count; thread++)
+	for (thread = 1; thread < thread_count; thread++)
 		pthread_join(thread_handles[thread], NULL);
-
-	
 	free(thread_handles);
 	dst = dst(cv::Range(offset, src.rows+offset), cv::Range(offset, src.cols+offset));
    auto end = std::chrono::system_clock::now();

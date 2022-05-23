@@ -1,2 +1,13 @@
 low_noisy_0801.png after  adaptive median filter (Basic Parallel with thread_count = 1) takes 0.00373948 seconds
 low_noisy_0801.png after  adaptive median filter (Basic Parallel with thread_count = 2) takes 13.9733 seconds
+low_noisy_0801.png after  adaptive median filter (Basic Parallel with thread_count = 1) takes 29.163 seconds
+low_noisy_0801.png after  adaptive median filter (Basic Parallel with thread_count = 1) takes 28.8225 seconds
+low_noisy_0801.png after  adaptive median filter (Basic Parallel with thread_count = 2) takes 19.5942 seconds
+low_noisy_0801.png after  adaptive median filter (Basic Parallel with thread_count = 2) takes 15.1429 seconds
+low_noisy_0801.png after  adaptive median filter (Basic Parallel with thread_count = 2) takes 15.129 seconds
+low_noisy_0801.png after  adaptive median filter (Basic Parallel with thread_count = 8) takes 6.59466 seconds
+low_noisy_0801.png after  adaptive median filter (Basic Parallel with thread_count = 8) takes 6.5684 seconds
+low_noisy_0801.png after  adaptive median filter (Basic Parallel with thread_count = 8) takes 4.41664 seconds
+low_noisy_0801.png after  adaptive median filter (Basic Parallel with thread_count = 8) takes 4.40308 seconds
+low_noisy_0801.png after  adaptive median filter (Basic Parallel with thread_count = 1) takes 19.5802 seconds
+low_noisy_0805.png after  adaptive median filter (Basic Parallel with thread_count = 16) takes 11.92 seconds

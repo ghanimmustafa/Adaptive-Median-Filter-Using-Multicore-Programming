@@ -1,1 +1,2 @@
 low_noisy_0801.png after  adaptive median filter (SMT Parallel with thread_count = 1) takes 29.2815 seconds
+low_noisy_0801.png after  adaptive median filter (SMT Parallel with thread_count = 8) takes 4.48531 seconds
