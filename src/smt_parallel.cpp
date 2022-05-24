@@ -140,7 +140,7 @@ int main(int argc, char **argv)
    myfile << image_name << " after " << " adaptive median filter (SMT Parallel with thread_count = "<< thread_count << ") takes "<<  elapsed_seconds.count()  << " seconds\n";
 	myfile.close();
 #ifdef DEBUG 
-	cv::imwrite("smt_adaptive_filtered_"+image_name, dst);
+	cv::imwrite("smt_ThC_"+to_string(thread_count)+"adaptive_filtered_"+image_name, dst);
 #endif
 	/*cv::resize(dst, dst, cv::Size(), 0.35, 0.35);
 	cv::imshow("result", dst);

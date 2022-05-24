@@ -1,5 +1,5 @@
 // Compile:
-// g++ basic_parallel.cpp -o basic_parallel `pkg-config --cflags --libs opencv4` -lpthread -Wall -DDEBUG
+// g++ basic_parallel.cpp -o basic_parallel `pkg-config --cflags --libs opencv4` -lpthread -Wall -DDEBUG 
 
 #include "opencv2/opencv.hpp"
 #include <pthread.h>
@@ -81,8 +81,8 @@ int main(int argc, char **argv)
 	int min_size = 3;
 	int max_size = 15;
 	int offset = max_size / 2;
-	auto start = chrono::system_clock::now();
 	int rows_cols_min = min(src.rows,src.cols);
+	auto start = chrono::system_clock::now();
 	cv::copyMakeBorder(src, dst, offset, offset, offset, offset, cv::BORDER_REFLECT);
 
 	int div_size;
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 	myfile.close();
 
 #ifdef DEBUG 
-	cv::imwrite("bp_adaptive_filtered_"+image_name, dst);
+	cv::imwrite("bp_ThC_"+to_string(thread_count)+"_adaptive_filtered_"+image_name, dst);
 #endif
 	/*cv::resize(dst, dst, cv::Size(), 0.35, 0.35);
 	cv::imshow("result", dst);

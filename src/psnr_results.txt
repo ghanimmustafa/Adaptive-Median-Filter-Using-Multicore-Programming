@@ -1,0 +1,38 @@
+The PSNR between 0801.png and low_noisy_0801.png = 12.5682 dBs 
+ The PSNR between 0801.png and local_filtered_low_noisy_0801.png = 28.6328 dBs 
+ The PSNR between 0801.png and seq_adaptive_filtered_low_noisy_0801.png = 32.1431 dBs 
+ The PSNR between 0802.png and low_noisy_0802.png = 12.154 dBs 
+ The PSNR between 0802.png and local_filtered_low_noisy_0802.png = 35.4695 dBs 
+ The PSNR between 0802.png and seq_adaptive_filtered_low_noisy_0802.png = 38.4152 dBs 
+ The PSNR between 0803.png and low_noisy_0803.png = 12.9302 dBs 
+ The PSNR between 0803.png and local_filtered_low_noisy_0803.png = 37.1759 dBs 
+ The PSNR between 0803.png and seq_adaptive_filtered_low_noisy_0803.png = 38.6676 dBs 
+ The PSNR between 0804.png and low_noisy_0804.png = 12.5214 dBs 
+ The PSNR between 0804.png and local_filtered_low_noisy_0804.png = 26.8182 dBs 
+ The PSNR between 0804.png and seq_adaptive_filtered_low_noisy_0804.png = 30.2648 dBs 
+ The PSNR between 0805.png and low_noisy_0805.png = 12.4148 dBs 
+ The PSNR between 0805.png and local_filtered_low_noisy_0805.png = 28.2147 dBs 
+ The PSNR between 0805.png and seq_adaptive_filtered_low_noisy_0805.png = 32.2422 dBs 
+ The PSNR between 0801.png and high_noisy_0801.png = 7.08846 dBs 
+ The PSNR between 0801.png and local_filtered_high_noisy_0801.png = 13.1188 dBs 
+ The PSNR between 0801.png and seq_adaptive_filtered_high_noisy_0801.png = 23.3316 dBs 
+ The PSNR between 0802.png and high_noisy_0802.png = 6.28159 dBs 
+ The PSNR between 0802.png and local_filtered_high_noisy_0802.png = 11.3716 dBs 
+ The PSNR between 0802.png and seq_adaptive_filtered_high_noisy_0802.png = 28.4964 dBs 
+ The PSNR between 0803.png and high_noisy_0803.png = 7.41744 dBs 
+ The PSNR between 0803.png and local_filtered_high_noisy_0803.png = 13.5249 dBs 
+ The PSNR between 0803.png and seq_adaptive_filtered_high_noisy_0803.png = 28.7067 dBs 
+ The PSNR between 0804.png and high_noisy_0804.png = 7.19163 dBs 
+ The PSNR between 0804.png and local_filtered_high_noisy_0804.png = 13.6509 dBs 
+ The PSNR between 0804.png and seq_adaptive_filtered_high_noisy_0804.png = 22.4496 dBs 
+ The PSNR between 0805.png and high_noisy_0805.png = 7.12374 dBs 
+ The PSNR between 0805.png and local_filtered_high_noisy_0805.png = 13.8488 dBs 
+ The PSNR between 0805.png and seq_adaptive_filtered_high_noisy_0805.png = 24.311 dBs 
+ 
+The PSNR between 0805.png and bp_ThC_8_adaptive_filtered_high_noisy_0805.png = 24.3154 dBs 
+The PSNR between 0805.png and smt_ThC_8adaptive_filtered_high_noisy_0805.png = 24.3154 dBs 
+ The PSNR between 0801.png and bp_ThC_4_adaptive_filtered_low_noisy_0801.png = 32.1437 dBs 
+ The PSNR between 0801.png and smt_ThC_4adaptive_filtered_low_noisy_0801.png = 32.1437 dBs 
+ 
+The PSNR between 0801.png and low_noisy_0801.png = 12.5682 dBs 
+ 

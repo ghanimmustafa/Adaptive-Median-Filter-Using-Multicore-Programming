@@ -9,3 +9,4 @@ high_noisy_0803.png after 5x5 local median filter takes 0.03314 seconds
 high_noisy_0804.png after 5x5 local median filter takes 0.0256196 seconds
 high_noisy_0805.png after 5x5 local median filter takes 0.0332741 seconds
 
+triangular_noisy_0805.png after 15x15 local median filter takes 0.349536 seconds
