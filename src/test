@@ -1,0 +1,10 @@
+0.0293402
+low_noisy_0802.png after 5x5 local median filter takes 0.0288783 seconds
+low_noisy_0803.png after 5x5 local median filter takes 0.0328312 seconds
+low_noisy_0804.png after 5x5 local median filter takes 0.0255794 seconds
+low_noisy_0805.png after 5x5 local median filter takes 0.0323773 seconds
+high_noisy_0801.png after 5x5 local median filter takes 0.0298437 seconds
+high_noisy_0802.png after 5x5 local median filter takes 0.0288046 seconds
+high_noisy_0803.png after 5x5 local median filter takes 0.03314 seconds
+high_noisy_0804.png after 5x5 local median filter takes 0.0256196 seconds
+high_noisy_0805.png after 5x5 local median filter takes 0.0332741 seconds
