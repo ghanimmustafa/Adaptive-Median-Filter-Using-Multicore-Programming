@@ -1,4 +1,4 @@
-# ozyegin_cs535_project
+# ozyegin_cs535_project (Adaptive Median Filter Implementation Using Multicore Programming) 
 
 ## How to use
 
