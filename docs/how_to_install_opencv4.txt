@@ -38,6 +38,7 @@ STEP 4 - BUILD AND INSTALL OPENCV
 $ cd ~
 
 STEP 5 - VERIFY INSTALLATION
+$ sudo apt install libopencv-dev
 $ pkg-config --modversion opencv4
 
 STEP 6 - EXAMPLE
